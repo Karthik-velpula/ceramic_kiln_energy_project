@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f2eb">
+  <title>Kilnwise — Energy Planner</title>
+  <style>
+    :root {
+      --ink: #20251f; --muted: #74796f; --paper: #f5f2eb; --card: #fffefa;
+      --line: #e8e3d9; --green: #284b3c; --green-dark: #1d382d; --clay: #bd684c;
+      --clay-soft: #f5e7df; --sage: #e6ede5; --shadow: 0 18px 55px #34392b12;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button, input { font: inherit; }
+    .shell { max-width: 1280px; margin: 0 auto; padding: 28px 36px 46px; }
+    header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 58px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-size: 17px; font-weight: 750; letter-spacing: -.04em; }
+    .brand-mark { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; color: #fff; background: var(--green); }
+    .brand-mark svg { width: 21px; }
+    .header-right { display: flex; gap: 10px; align-items: center; color: var(--muted); font-size: 12px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #b4a767; box-shadow: 0 0 0 4px #b4a7671b; }
+    .status-dot.online { background: #5a9b6d; box-shadow: 0 0 0 4px #5a9b6d1b; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(270px, 355px); align-items: end; gap: 36px; margin-bottom: 34px; }
+    .eyebrow { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; color: var(--clay); font-size: 11px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+    .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--clay); }
+    h1 { max-width: 690px; margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(38px, 5vw, 60px); line-height: 1.02; font-weight: 500; letter-spacing: -.045em; }
+    h1 em { color: var(--clay); font-weight: 400; }
+    .hero-copy { max-width: 585px; margin: 18px 0 0; color: var(--muted); font-size: 14px; line-height: 1.7; }
+    .hero-note { border-left: 1px solid #d8d1c4; padding: 5px 0 5px 19px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .hero-note strong { display: block; margin-bottom: 5px; color: var(--ink); font-size: 13px; }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(330px, .75fr); gap: 20px; align-items: stretch; }
+    .panel { background: var(--card); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+    .form-panel { padding: 28px 30px 26px; }
+    .panel-top { display: flex; justify-content: space-between; align-items: start; margin-bottom: 25px; }
+    .panel-title { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 24px; font-weight: 500; letter-spacing: -.025em; }
+    .panel-subtitle { margin: 7px 0 0; color: var(--muted); font-size: 12px; }
+    .batch-tag { padding: 7px 10px; border-radius: 20px; background: var(--sage); color: var(--green); font-size: 10px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+    .section-label { display: flex; align-items: center; gap: 9px; margin: 25px 0 13px; color: #535a51; font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .section-label:first-of-type { margin-top: 0; }
+    .section-label span { color: var(--clay); }
+    .section-label::after { content: ""; height: 1px; flex: 1; background: var(--line); }
+    .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
+    .field { min-width: 0; }
+    label { display: flex; align-items: center; justify-content: space-between; gap: 7px; margin-bottom: 7px; color: #3f453e; font-size: 11px; font-weight: 700; }
+    label small { color: #92958d; font-size: 10px; font-weight: 500; }
+    .input-wrap { position: relative; }
+    input { width: 100%; height: 43px; border: 1px solid #deded5; border-radius: 9px; outline: none; padding: 0 57px 0 12px; background: #fff; color: var(--ink); font-size: 13px; transition: border-color .15s, box-shadow .15s; }
+    input:focus { border-color: #6c927c; box-shadow: 0 0 0 3px #6c927c20; }
+    input.invalid { border-color: #c45445; box-shadow: 0 0 0 3px #c4544512; }
+    .unit { position: absolute; top: 50%; right: 12px; transform: translateY(-50%); color: #858981; font-size: 10px; pointer-events: none; }
+    .field-error { display: none; margin-top: 5px; color: #b44235; font-size: 10px; }
+    .field-error.visible { display: block; }
+    .form-footer { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line); }
+    .hint { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 10px; }
+    .hint svg { width: 15px; color: var(--green); flex: 0 0 auto; }
+    .actions { display: flex; gap: 9px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 42px; border: 0; border-radius: 9px; padding: 0 15px; cursor: pointer; font-size: 11px; font-weight: 750; transition: transform .15s, background .15s; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-secondary { background: #f1eee7; color: #50564e; }
+    .btn-primary { min-width: 146px; background: var(--green); color: white; }
+    .btn-primary:hover { background: var(--green-dark); }
+    .btn-primary:disabled { opacity: .65; cursor: wait; transform: none; }
+    .btn svg { width: 15px; }
+    .result-panel { display: flex; flex-direction: column; min-height: 100%; overflow: hidden; background: var(--green); color: white; border-color: var(--green); }
+    .result-head { padding: 26px 25px 0; }
+    .result-kicker { color: #bdcfc2; font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .result-heading { margin: 11px 0 0; font-family: Georgia, "Times New Roman", serif; font-size: 26px; font-weight: 400; letter-spacing: -.025em; }
+    .result-content { display: flex; flex: 1; flex-direction: column; justify-content: center; padding: 25px; }
+    .placeholder { display: flex; flex-direction: column; align-items: flex-start; max-width: 270px; }
+    .kiln-illustration { display: grid; place-items: center; width: 64px; height: 64px; margin-bottom: 20px; border: 1px solid #ffffff2c; border-radius: 18px; color: #df9a7c; background: #ffffff09; }
+    .kiln-illustration svg { width: 36px; height: 36px; }
+    .placeholder h3 { margin: 0 0 9px; font-family: Georgia, "Times New Roman", serif; font-size: 21px; font-weight: 400; }
+    .placeholder p { margin: 0; color: #bdcfc2; font-size: 12px; line-height: 1.65; }
+    .estimate { display: none; }
+    .estimate.visible { display: block; animation: appear .3s ease-out; }
+    @keyframes appear { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+    .estimate-label { color: #bdcfc2; font-size: 11px; }
+    .estimate-value { display: flex; align-items: baseline; gap: 9px; margin: 5px 0 5px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(48px, 5vw, 70px); line-height: 1; letter-spacing: -.055em; }
+    .estimate-value small { color: #c6d5c9; font-family: inherit; font-size: 15px; letter-spacing: 0; }
+    .estimate-caption { color: #bdcfc2; font-size: 11px; }
+    .result-divider { height: 1px; margin: 25px 0 18px; background: #ffffff29; }
+    .result-meta { display: flex; justify-content: space-between; gap: 10px; color: #bdcfc2; font-size: 10px; }
+    .result-meta strong { color: #fff; font-weight: 650; }
+    .result-error { display: none; margin-top: 17px; border: 1px solid #ffc1b044; border-radius: 8px; padding: 11px 12px; color: #ffd1c3; background: #8e352a45; font-size: 11px; line-height: 1.5; }
+    .result-error.visible { display: block; }
+    .result-bottom { padding: 16px 25px; border-top: 1px solid #ffffff20; color: #bdcfc2; font-size: 10px; line-height: 1.55; }
+    .result-bottom span { color: #e5b08c; }
+    .footnote { display: flex; justify-content: space-between; gap: 20px; margin-top: 19px; color: #92958d; font-size: 10px; }
+    .footnote a { color: var(--green); text-decoration: none; }
+    @media (max-width: 850px) { .shell { padding: 23px 22px 35px; } header { margin-bottom: 42px; } .hero { grid-template-columns: 1fr; gap: 20px; } .hero-note { max-width: 500px; } .workspace { grid-template-columns: 1fr; } .result-panel { min-height: 390px; } .result-content { justify-content: flex-start; } }
+    @media (max-width: 560px) { .shell { padding: 18px 14px 28px; } header { margin-bottom: 34px; } .header-right { font-size: 10px; } .hero { margin-bottom: 24px; } h1 { font-size: 41px; } .form-panel { padding: 22px 17px; } .panel-top { gap: 10px; } .batch-tag { font-size: 8px; } .fields { grid-template-columns: 1fr; gap: 13px; } .form-footer { align-items: stretch; flex-direction: column; } .actions { width: 100%; } .actions .btn { flex: 1; } .hint { align-items: flex-start; } .result-panel { min-height: 360px; } .footnote { flex-direction: column; gap: 6px; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 18.5h14M7 18V9.5c0-2.8 2.2-5 5-5s5 2.2 5 5V18M9 18v-4.2c0-1.7 1.3-3 3-3s3 1.3 3 3V18M12 8V5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span>Kilnwise</span>
+      </div>
+      <div class="header-right"><span class="status-dot" id="statusDot"></span><span id="statusText">Checking prediction service</span></div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Firing energy planner</div>
+        <h1>Know the cost<br>before the <em>fire.</em></h1>
+        <p class="hero-copy">Estimate the electricity your next ceramic batch will use. Enter the firing plan and Kilnwise will return an energy estimate in kilowatt-hours.</p>
+      </div>
+      <aside class="hero-note"><strong>Plan with confidence</strong>Energy use responds to batch weight, heat, moisture, kiln insulation and firing time. Adjust the values to compare your planned conditions.</aside>
+    </section>
+
+    <section class="workspace" aria-label="Kiln energy calculator">
+      <form class="panel form-panel" id="predictionForm" novalidate>
+        <div class="panel-top">
+          <div><h2 class="panel-title">Firing details</h2><p class="panel-subtitle">Enter the planned conditions for one batch.</p></div>
+          <span class="batch-tag">New batch</span>
+        </div>
+
+        <div class="section-label"><span>01</span> Batch &amp; firing</div>
+        <div class="fields">
+          <div class="field"><label for="pottery_load_kg">Pottery load <small>total batch weight</small></label><div class="input-wrap"><input id="pottery_load_kg" name="pottery_load_kg" type="number" min="0.1" max="10000" step="any" value="120" required><span class="unit">kg</span></div><div class="field-error"></div></div>
+          <div class="field"><label for="target_temperature_c">Target temperature</label><div class="input-wrap"><input id="target_temperature_c" name="target_temperature_c" type="number" min="100" max="1600" step="any" value="1050" required><span class="unit">°C</span></div><div class="field-error"></div></div>
+          <div class="field"><label for="initial_moisture_pct">Initial moisture</label><div class="input-wrap"><input id="initial_moisture_pct" name="initial_moisture_pct" type="number" min="0" max="100" step="any" value="8" required><span class="unit">%</span></div><div class="field-error"></div></div>
+          <div class="field"><label for="planned_duration_hr">Firing duration</label><div class="input-wrap"><input id="planned_duration_hr" name="planned_duration_hr" type="number" min="0.1" max="100" step="any" value="12" required><span class="unit">hours</span></div><div class="field-error"></div></div>
+        </div>
+
+        <div class="section-label"><span>02</span> Kiln &amp; environment</div>
+        <div class="fields">
+          <div class="field"><label for="insulation_rating">Insulation rating <small>higher = better</small></label><div class="input-wrap"><input id="insulation_rating" name="insulation_rating" type="number" min="0" max="1" step="any" value="0.6" required><span class="unit">0–1</span></div><div class="field-error"></div></div>
+          <div class="field"><label for="kiln_volume_m3">Kiln volume</label><div class="input-wrap"><input id="kiln_volume_m3" name="kiln_volume_m3" type="number" min="0.1" max="1000" step="any" value="3.5" required><span class="unit">m³</span></div><div class="field-error"></div></div>
+          <div class="field"><label for="ambient_temperature_c">Ambient temperature</label><div class="input-wrap"><input id="ambient_temperature_c" name="ambient_temperature_c" type="number" min="-50" max="70" step="any" value="22" required><span class="unit">°C</span></div><div class="field-error"></div></div>
+        </div>
+
+        <div class="form-footer">
+          <div class="hint"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5 3.5 5v4.6c0 4.1 2.8 6.7 6.5 7.9 3.7-1.2 6.5-3.8 6.5-7.9V5L10 2.5Z" stroke="currentColor" stroke-width="1.4"/><path d="m7 10 2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Values are checked against supported operating ranges.</div>
+          <div class="actions"><button class="btn btn-secondary" type="button" id="resetButton">Reset</button><button class="btn btn-primary" type="submit" id="estimateButton"><span>Estimate energy</span><svg viewBox="0 0 20 20" fill="none"><path d="M3.5 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        </div>
+      </form>
+
+      <aside class="panel result-panel" aria-live="polite">
+        <div class="result-head"><div class="result-kicker">Your estimate</div><h2 class="result-heading">Batch energy use</h2></div>
+        <div class="result-content">
+          <div class="placeholder" id="placeholder"><div class="kiln-illustration" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M6 31h28M9 30V15a11 11 0 0 1 22 0v15M13 30v-8a7 7 0 0 1 14 0v8M20 12V8m-4 12c1-2 2-2 3-4m2 8c1-2 2-2 3-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 27c1.4-1.5 1.7-2.4 1.2-4.2 2.4 1.1 3.2 2.6 2.1 4.8 1.4-.5 2.3-1.3 2.7-2.4 1.4 2.8-.2 5-2.8 5-2.1 0-3.7-1.3-3.2-3.2Z" fill="currentColor" opacity=".8"/></svg></div><h3>Ready when you are</h3><p>Fill in your batch details and request an estimate. Your result will appear here.</p></div>
+          <div class="estimate" id="estimate"><div class="estimate-label">Predicted electricity consumption</div><div class="estimate-value"><span id="estimateValue">—</span><small>kWh</small></div><div class="estimate-caption">for the firing batch you described</div><div class="result-divider"></div><div class="result-meta"><span>Prediction model</span><strong id="modelName">Linear Regression</strong></div><div class="result-meta" style="margin-top:11px"><span>Estimate status</span><strong>Ready to plan</strong></div></div>
+          <div class="result-error" id="resultError" role="alert"></div>
+        </div>
+        <div class="result-bottom">A data-driven estimate based on your kiln conditions. <span>Actual consumption may vary.</span></div>
+      </aside>
+    </section>
+    <footer class="footnote"><span>Kilnwise · Ceramic firing energy estimator</span><span>Model details and technical docs at <a href="/docs" target="_blank" rel="noreferrer">API docs ↗</a></span></footer>
+  </main>
+  <script>
+    const form = document.getElementById('predictionForm');
+    const API_BASE = window.location.protocol === 'file:' ? 'http://127.0.0.1:8000' : '';
+    const submitButton = document.getElementById('estimateButton');
+    const placeholder = document.getElementById('placeholder');
+    const estimate = document.getElementById('estimate');
+    const errorBox = document.getElementById('resultError');
+    const fields = [...form.querySelectorAll('input')];
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.classList.add('visible');
+      placeholder.style.display = 'none';
+      estimate.classList.remove('visible');
+    }
+    function clearError() {
+      errorBox.textContent = '';
+      errorBox.classList.remove('visible');
+    }
+    function validate() {
+      let valid = true;
+      fields.forEach((input) => {
+        const err = input.closest('.field').querySelector('.field-error');
+        let message = '';
+        if (input.value.trim() === '' || !Number.isFinite(Number(input.value))) message = 'Enter a numeric value.';
+        else if (input.validity.rangeUnderflow || input.validity.rangeOverflow) message = `Use a value from ${input.min} to ${input.max}.`;
+        input.classList.toggle('invalid', Boolean(message));
+        err.textContent = message;
+        err.classList.toggle('visible', Boolean(message));
+        if (message) valid = false;
+      });
+      return valid;
+    }
+    fields.forEach((input) => input.addEventListener('input', () => {
+      input.classList.remove('invalid');
+      input.closest('.field').querySelector('.field-error').classList.remove('visible');
+      clearError();
+    }));
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      clearError();
+      if (!validate()) return;
+      const payload = Object.fromEntries(fields.map((input) => [input.name, Number(input.value)]));
+      submitButton.disabled = true;
+      submitButton.querySelector('span').textContent = 'Calculating…';
+      try {
+        const response = await fetch(`${API_BASE}/predict`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const data = await response.json();
+        if (!response.ok) {
+          const detail = Array.isArray(data.detail) ? data.detail.map((item) => item.msg).join(', ') : data.detail;
+          throw new Error(detail || 'The prediction service could not process this batch.');
+        }
+        document.getElementById('estimateValue').textContent = Number(data.predicted_energy_consumption_kwh).toLocaleString(undefined, { maximumFractionDigits: 2 });
+        placeholder.style.display = 'none';
+        estimate.classList.add('visible');
+      } catch (error) {
+        showError(error.message.includes('fetch') ? 'Could not reach the prediction service. Make sure the API is running and try again.' : error.message);
+      } finally {
+        submitButton.disabled = false;
+        submitButton.querySelector('span').textContent = 'Estimate energy';
+      }
+    });
+    document.getElementById('resetButton').addEventListener('click', () => {
+      form.reset();
+      fields.forEach((input) => { input.classList.remove('invalid'); input.closest('.field').querySelector('.field-error').classList.remove('visible'); });
+      clearError(); estimate.classList.remove('visible'); placeholder.style.display = 'flex';
+    });
+    fetch(`${API_BASE}/health`).then((r) => r.json()).then((health) => {
+      const dot = document.getElementById('statusDot');
+      const text = document.getElementById('statusText');
+      if (health.status === 'ok' && health.model_loaded) { dot.classList.add('online'); text.textContent = 'Prediction service ready'; }
+      else text.textContent = 'Model not loaded — run the training pipeline';
+    }).catch(() => { document.getElementById('statusText').textContent = 'Prediction service unavailable'; });
+  </script>
+</body>
+</html>

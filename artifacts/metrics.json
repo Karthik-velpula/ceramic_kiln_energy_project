@@ -1,0 +1,31 @@
+{
+  "model": "Linear Regression",
+  "feature_columns": [
+    "pottery_load_kg",
+    "target_temperature_c",
+    "initial_moisture_pct",
+    "planned_duration_hr",
+    "insulation_rating",
+    "kiln_volume_m3",
+    "ambient_temperature_c",
+    "thermal_load_index",
+    "moisture_removal_load"
+  ],
+  "metrics": {
+    "Linear Regression": {
+      "MAE": 15.009192526540664,
+      "RMSE": 18.783926987260294,
+      "R2": 0.9776163860626367
+    },
+    "Random Forest": {
+      "MAE": 17.38325088601967,
+      "RMSE": 22.913641094325946,
+      "R2": 0.9666922239232667
+    }
+  },
+  "dataset_rows": 1200,
+  "version_rows": {
+    "v1": 600,
+    "v2": 600
+  }
+}
