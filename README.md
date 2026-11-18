@@ -36,3 +36,10 @@ Run `python -m kiln_energy.pipeline` to regenerate CSVs, metrics, model artifact
 - `reports/images/`: supplied Kilnwise output screenshots embedded in the detailed report.
 - `kiln_energy/detailed_report.py`: generator for the multi-page project report.
 - `.github/workflows/ci.yml`: automated checks.
+
+
+<img width="1457" height="823" alt="Screenshot 2026-11-18 at 14 57 09" src="https://github.com/user-attachments/assets/57fc27b6-30da-4dce-ac01-ee2814578e1a" />
+
+
+
+<img width="1466" height="829" alt="Screenshot 2026-11-18 at 14 56 37" src="https://github.com/user-attachments/assets/e594e820-4b40-4592-a10e-026eb4d2ef5e" />
