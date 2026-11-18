@@ -22,6 +22,8 @@ MUTED = colors.HexColor("#687168")
 PALE = colors.HexColor("#F1F4EF")
 WARM = colors.HexColor("#F8F3ED")
 GRID = colors.HexColor("#D9DED8")
+REPOSITORY_URL = "https://github.com/Karthik-velpula/ceramic_kiln_energy_project"
+CI_RUN_URL = REPOSITORY_URL + "/actions/runs/44278979628"
 
 
 class SectionBand(Flowable):
@@ -130,7 +132,7 @@ def build_report(output_path: str | Path | None = None) -> Path:
              f'{metrics["metrics"][metrics["model"]]["R2"]:.4f}']]
     story += [table(rows, [1.45*inch, .8*inch, 1.0*inch, 1.05*inch, .65*inch]), Spacer(1, 14),
         P("How to read this report", "KHead2"),
-        P("The reported performance is measured on held-out records drawn from synthetic data. It explains how the pipeline works; it is not evidence of calibrated energy forecasts for a real kiln. GitHub Actions is configured in the repository, but a hosted workflow run and public repository link are not available because no remote is configured.") , PageBreak()]
+        P("The reported performance is measured on held-out records drawn from synthetic data. It explains how the pipeline works; it is not evidence of calibrated energy forecasts for a real kiln. The project has been pushed to <link href='" + REPOSITORY_URL + "' color='#284B3C'>GitHub</link>, and the push-triggered CI run passed.") , PageBreak()]
 
     # 2. Product and architecture.
     story += [P("1. Project overview", "KHead"),
@@ -272,10 +274,10 @@ def build_report(output_path: str | Path | None = None) -> Path:
                ["Hosted MLflow", "Not configured; local evidence is not a shared hosted registry"]],
               [2.0*inch, 4.0*inch]), Spacer(1, 9),
         P("Continuous integration", "KHead2"),
-        P("The GitHub Actions workflow checks out the repository, installs the requirements on Python 3.11, runs the pytest validation suite, trains the pipeline, and checks that sample model outputs are non-negative. It is configured for pushes and pull requests. The workflow configuration exists, but there is no configured Git remote, so this project has no hosted Actions run URL or repository submission link."),
+        P("The GitHub Actions workflow checks out the repository, installs the requirements on Python 3.11, runs the pytest validation suite, trains the pipeline, and checks that sample model outputs are non-negative. It is configured for pushes and pull requests. The published repository is <link href='" + REPOSITORY_URL + "' color='#284B3C'>Karthik-velpula/ceramic_kiln_energy_project</link>. Push-triggered workflow run <link href='" + CI_RUN_URL + "' color='#284B3C'>44278979628</link> completed successfully: dependency install, tests, training, and the non-negative output check all passed."),
         P("Local reproducibility evidence", "KHead2"),
-        P("The project recorded a three-test validation run and a successful non-negative sample prediction check during implementation. The actual metric artifact and model were generated locally. Local MLflow registration was successful. A hosted GitHub run, remote artifact store, or collaborator-visible MLflow server requires repository and service configuration."),
-        SectionBand("IMPORTANT STATUS", "Configured workflow is not the same as a hosted workflow execution. Publish to GitHub and run Actions to create that evidence.", usable), PageBreak()]
+        P("A three-test validation suite, training pipeline, and non-negative prediction check all passed in GitHub Actions run 44278979628. The metric artifact and registered model were also generated locally; the SQLite MLflow registry remains local, with no hosted MLflow tracking server or remote artifact store configured."),
+        SectionBand("CI RESULT", "GitHub Actions run 44278979628 passed on main. The hosted workflow evidence is available at the linked run.", usable), PageBreak()]
 
     # 9. Reproducibility, file map, and operations.
     story += [P("9. Reproduce, run, and inspect the project", "KHead"),
@@ -307,7 +309,7 @@ def build_report(output_path: str | Path | None = None) -> Path:
                ["Random record split", "The same simulated V1/V2 generation process appears in train and test; this is not a new-kiln test."],
                ["No uncertainty interval", "The API returns one point estimate and does not quantify prediction uncertainty."],
                ["No drift monitoring", "The app does not track real prediction errors, usage, or shifts in kiln behavior."],
-               ["Local artifacts", "Model, SQLite MLflow store, and report are local; no hosted repository or registry is connected."],
+               ["Artifact locations", "Code, datasets, model, and reports are pushed to GitHub; the SQLite MLflow tracking database remains local."],
                ["Simplified input", "Insulation is a synthetic 0-to-1 score, not a standardized engineering measurement."]],
               [1.65*inch, 4.35*inch]), Spacer(1, 8),
         P("Recommended next steps for a real deployment", "KHead2"),

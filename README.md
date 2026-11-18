@@ -23,7 +23,7 @@ Required batch fields: `pottery_load_kg`, `target_temperature_c`, `initial_moist
 
 ## Reproducibility and evidence
 
-Run `python -m kiln_energy.pipeline` to regenerate CSVs, metrics, plots, model artifacts, and `reports/ceramic_kiln_energy_report.pdf`. The GitHub Actions workflow runs validation and non-negative prediction checks after the project is pushed. Check the repository's Actions tab for hosted run history.
+Run `python -m kiln_energy.pipeline` to regenerate CSVs, metrics, model artifacts, and `reports/ceramic_kiln_energy_report.pdf`. The project is published at [github.com/Karthik-velpula/ceramic_kiln_energy_project](https://github.com/Karthik-velpula/ceramic_kiln_energy_project). The push-triggered [GitHub Actions run 44278979628](https://github.com/Karthik-velpula/ceramic_kiln_energy_project/actions/runs/44278979628) passed tests, training, and the non-negative prediction check.
 
 ## Layout
 
